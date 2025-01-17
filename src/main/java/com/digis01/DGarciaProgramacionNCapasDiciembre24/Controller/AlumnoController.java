@@ -9,12 +9,17 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.AlumnoDireccion;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Colonia;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Direccion;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
+import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.ResultExcel;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -106,35 +111,13 @@ public class AlumnoController {
     @GetMapping("/formEditable") //idUsuario y idDireccion
     public String Form(@RequestParam Integer IdAlumno, @RequestParam(required = false) Integer IdDireccion, Model model) {
 
-        if (IdDireccion != null) {
-            if (IdAlumno > 0 && IdDireccion > 0) {
-                /*consumir GetbyidDireccion */
-                //alumnoDAOImplementation.DireccionAlumnoByIdDireccion(IdDireccion)
-
-                AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
-                alumnoDireccion.Alumno = new Alumno();
-                alumnoDireccion.Alumno.setIdAlumno(14);
-
-                alumnoDireccion.Direccion = new Direccion();
-                alumnoDireccion.Direccion.setIdDireccion(4);
-                alumnoDireccion.Direccion.setCalle("calle x");
-                alumnoDireccion.Direccion.setNumeroInterior("32A");
-                model.addAttribute("alumnoDireccion", alumnoDireccion);
-
-                // lleno un alumnoDireccion
-                System.out.println(".");
-            } else if (IdAlumno > 0 && IdDireccion == 0) {
-                /*nueva direccion*/
-                //lleno un alumnoDireccion
-                System.out.println(".");
-            }
+        if (IdDireccion == null) {
+            System.out.println("Editar usuario");
+        } else if (IdDireccion == 0) {
+            System.out.println("Agregar direccion");
         } else {
-            // editar un usaurio
-
+            System.out.println("Editar direccion");
         }
-
-//        2.Editar usaurio (direccion nula)
-//        3.Agregar nueva dirección
         return "AlumnoForm";
     }
 
@@ -169,49 +152,101 @@ public class AlumnoController {
     public String CargaMasiva(@RequestParam MultipartFile archivo) {
 
         if (archivo != null && !archivo.isEmpty()) {
-            
+
             // CargaMasiva.txt
             // split -> ["CargaMasiva", "txt"]
             String fileExension = archivo.getOriginalFilename().split("\\.")[1];
 
             if (fileExension.equals("txt")) {
                 ProcesarArchivo(archivo);
+            } else { // archivo xlsx
+                List<AlumnoDireccion> alumnosDireccion = LecturaArchivo(archivo);
+                List<ResultExcel> listaErrores = ValidarInformacion(alumnosDireccion);
+                
+                if (listaErrores.isEmpty()) {
+                    /*procesaria mi archivo
+                    en vista carga masiva, muestro boton procesar..
+                    */
+                } else{
+                    /*
+                        desplegar una tabla con los errores encontrados
+                    */
+                }
             }
 
         }
 
         return "";
     }
-    
-    private boolean ProcesarArchivo(MultipartFile archivo){
-        
-        try{
-            
+
+    private boolean ProcesarArchivo(MultipartFile archivo) {
+
+        try {
+
             InputStream inputStream = archivo.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            
+
             String linea = "";
-            
-            while ( (linea = bufferedReader.readLine()) != null ) {                
+
+            while ((linea = bufferedReader.readLine()) != null) {
                 // nombre|apaterno| ....
                 String[] campos = linea.split("\\|");
-                
+
                 AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
                 alumnoDireccion.Alumno = new Alumno();
                 alumnoDireccion.Alumno.setNombre(campos[0]);
                 /*...*/
 //                alumnoDireccion.Alumno.setFechaNacimiento(new Date());
 
-
 //                alumnoDAOImplementation.Add(alumnoDireccion);
             }
-            
-        }catch (Exception ex){
+
+        } catch (Exception ex) {
             return false;
         }
-        
+
         return true;
+
+    }
+
+    private List<AlumnoDireccion> LecturaArchivo(MultipartFile archivo) {
+
+        List<AlumnoDireccion> listaAlumnosDireccion = new ArrayList<>();
         
+        try (XSSFWorkbook workbook = new XSSFWorkbook(archivo.getInputStream())){
+            Sheet workSheet = workbook.getSheetAt(0);
+            for (Row row : workSheet) {
+                AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
+                alumnoDireccion.Alumno = new Alumno();
+                alumnoDireccion.Alumno.setNombre(row.getCell(0)!= null ? row.getCell(0).toString() : "");
+                alumnoDireccion.Alumno.setApellidoPaterno(row.getCell(1).toString());
+                /*...*/
+                
+                listaAlumnosDireccion.add(alumnoDireccion);
+            }
+        }catch(Exception ex){
+            listaAlumnosDireccion = null;
+        }
+        
+        return listaAlumnosDireccion;
+    }
+    
+    
+    private List<ResultExcel> ValidarInformacion(List<AlumnoDireccion> alumnosDireccion){
+        int fila = 1;
+        List<ResultExcel> listaErrores = new ArrayList<>();
+        for (AlumnoDireccion alumnoDireccion : alumnosDireccion) {
+            
+            if(alumnoDireccion.Alumno.getNombre() == null || alumnoDireccion.Alumno.getNombre() == ""){
+                
+                listaErrores.add(new ResultExcel(fila, alumnoDireccion.Alumno.getNombre(), "Campo obligatorio"));
+            }
+//            if(alumnoDireccion.Alumno.getNombre() <- no tenga algo que no se una letra  )
+            
+            fila++;
+        }
+        
+        return listaErrores;
     }
 
 }

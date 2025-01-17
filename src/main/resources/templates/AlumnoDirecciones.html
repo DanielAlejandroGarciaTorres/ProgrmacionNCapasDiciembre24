@@ -17,7 +17,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div class="container">
             <h1 th:text="${alumnoDireccion.Alumno.Nombre} + ' ' + ${alumnoDireccion.Alumno.ApellidoPaterno}"></h1>
             
-            <a class="btn btn-warning">Editar Alumno</a>
+            <a class="btn btn-warning" th:href="@{/Alumno/formEditable?IdAlumno=} + ${alumnoDireccion.Alumno.IdAlumno}">Editar Alumno</a>
+            
+            <a class="btn btn-success" th:href="@{/Alumno/formEditable?IdAlumno=} + ${alumnoDireccion.Alumno.IdAlumno} + '&IdDireccion=0'"></a>
             
             <table class="table table-dark table-striped">
                 <thead>
@@ -30,7 +32,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </thead>
                 <tbody>
                     <tr th:each="direccion : ${alumnoDireccion.Direcciones}">
-                        <td><a th:href="@{/Alumno/formEdit/{IdDireccion}(IdDireccion=${direccion.IdDireccion})}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a></td>
+                        <td><a th:href="@{/Alumno/formEditable?IdAlumno=} + ${alumnoDireccion.Alumno.IdAlumno} + '&IdDireccion=' + ${direccion.IdDireccion}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a></td>
                         <td th:text="${direccion.Calle}"></td>
                         <td th:text="${direccion.Colonia.Nombre}"></td>
                         <td><a class="btn btn-danger"><i class="bi bi-trash3-fill"></i></a></td>
