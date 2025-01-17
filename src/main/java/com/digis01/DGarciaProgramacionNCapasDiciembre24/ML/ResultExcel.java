@@ -19,5 +19,31 @@ public class ResultExcel {
         this.texto = texto;
         this.descripcionProblema = descripcionProblema;
     }
+
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    public String getDescripcionProblema() {
+        return descripcionProblema;
+    }
+
+    public void setDescripcionProblema(String descripcionProblema) {
+        this.descripcionProblema = descripcionProblema;
+    }
+    
+    
     
 }

@@ -11,6 +11,7 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Direccion;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.ResultExcel;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
+import jakarta.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -153,7 +154,7 @@ public class AlumnoController {
     }
 
     @PostMapping("/CargaMasiva")
-    public String CargaMasiva(@RequestParam MultipartFile archivo) throws IOException {
+    public String CargaMasiva(@RequestParam MultipartFile archivo, Model model, HttpSession session) throws IOException {
         if (archivo != null && !archivo.isEmpty()) {
 
             // CargaMasiva.txt
@@ -171,23 +172,33 @@ public class AlumnoController {
                 
                 archivo.transferTo(new File(absolutePath));
                 
-                List<AlumnoDireccion> alumnosDireccion = LecturaArchivo(archivo);
+                List<AlumnoDireccion> alumnosDireccion = LecturaArchivo(new File(absolutePath));
                 List<ResultExcel> listaErrores = ValidarInformacion(alumnosDireccion);
                 
                 if (listaErrores.isEmpty()) {
-                    /*procesaria mi archivo
-                    en vista carga masiva, muestro boton procesar..
-                    */
-                } else{
-                    /*
-                        desplegar una tabla con los errores encontrados
-                    */
-                }
+                        session.setAttribute("urlFile", absolutePath);
+                        model.addAttribute("listaErrores", listaErrores);
+                        model.addAttribute("archivoCorrecto", true);
+                    }else {
+                        model.addAttribute("listaErrores", listaErrores);
+                        model.addAttribute("archivoCorrecto", false);
+                    }
+                
             }
 
         }
 
-        return "";
+        return "CargaMasivaIndex";
+    }
+    
+    
+    @GetMapping("/CargaMasiva/procesar")
+    public String Procesar(HttpSession session){
+        /*Recuperar la ruta*/
+        List<AlumnoDireccion> alumnosDireccion = LecturaArchivo(new File(session.getAttribute("urlFile").toString()));
+        /*Recorrer todos los elementos, e insertarlos en la bd*/
+        session.removeAttribute("urlFile");
+        return "CargaMasivaIndex";
     }
 
     private boolean ProcesarArchivo(MultipartFile archivo) {
@@ -220,11 +231,11 @@ public class AlumnoController {
 
     }
 
-    private List<AlumnoDireccion> LecturaArchivo(MultipartFile archivo) {
+    private List<AlumnoDireccion> LecturaArchivo(File archivo) {
 
         List<AlumnoDireccion> listaAlumnosDireccion = new ArrayList<>();
         
-        try (XSSFWorkbook workbook = new XSSFWorkbook(archivo.getInputStream())){
+        try (XSSFWorkbook workbook = new XSSFWorkbook(archivo)){
             Sheet workSheet = workbook.getSheetAt(0);
             for (Row row : workSheet) {
                 AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
