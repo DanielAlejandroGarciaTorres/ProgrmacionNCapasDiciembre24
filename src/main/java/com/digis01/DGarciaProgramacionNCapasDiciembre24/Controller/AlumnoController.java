@@ -12,8 +12,12 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.ResultExcel;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -149,8 +153,7 @@ public class AlumnoController {
     }
 
     @PostMapping("/CargaMasiva")
-    public String CargaMasiva(@RequestParam MultipartFile archivo) {
-
+    public String CargaMasiva(@RequestParam MultipartFile archivo) throws IOException {
         if (archivo != null && !archivo.isEmpty()) {
 
             // CargaMasiva.txt
@@ -160,6 +163,14 @@ public class AlumnoController {
             if (fileExension.equals("txt")) {
                 ProcesarArchivo(archivo);
             } else { // archivo xlsx
+                
+                String root = System.getProperty("user.dir");
+                String path = "src/main/resources/static/archivos";
+                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSS"));
+                String absolutePath = root + "/" + path + "/" + fecha + archivo.getOriginalFilename();
+                
+                archivo.transferTo(new File(absolutePath));
+                
                 List<AlumnoDireccion> alumnosDireccion = LecturaArchivo(archivo);
                 List<ResultExcel> listaErrores = ValidarInformacion(alumnosDireccion);
                 
