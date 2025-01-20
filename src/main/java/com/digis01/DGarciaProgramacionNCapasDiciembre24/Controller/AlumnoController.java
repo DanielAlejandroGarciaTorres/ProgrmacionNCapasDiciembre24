@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Row;
@@ -106,10 +107,26 @@ public class AlumnoController {
     }
 
     @PostMapping("/form")
-    public String Form(@ModelAttribute AlumnoDireccion alumnoDireccion) {
+    public String Form(@ModelAttribute AlumnoDireccion alumnoDireccion, @RequestParam MultipartFile imagenFile) {
         //idAlumno == 0  && IdDireccion == 0
+        
+        try {
+        /*validen que sea una imagen*/
+        
+            if(!imagenFile.isEmpty()){
+                /*tomar el archivo y procesarlo a una base64*/
+                byte[] bytes = imagenFile.getBytes();
+                String imagenBase64 = Base64.getEncoder().encodeToString(bytes);
+                alumnoDireccion.Alumno.setImagen(imagenBase64);
+            }
+        
+        alumnoDireccion.Alumno.setImagen("Aquí va la base64");
         alumnoDAOImplementation.Add(alumnoDireccion);
-
+        
+        } catch (Exception ex){
+            return"Error";
+        }
+        
         return "redirect:/Alumno";
     }
 
