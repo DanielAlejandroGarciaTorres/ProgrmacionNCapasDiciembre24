@@ -4,6 +4,7 @@
  */
 package com.digis01.DGarciaProgramacionNCapasDiciembre24.ML;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * @author ALIEN 34
  */
 public class AlumnoDireccion {
-    
+    @Valid
     public Alumno Alumno;
     public List<Direccion> Direcciones;   
     public Direccion Direccion;
@@ -40,7 +41,6 @@ public class AlumnoDireccion {
         this.Direccion = Direccion;
     }
 
-    
     
     
         

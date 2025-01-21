@@ -1,12 +1,18 @@
 package com.digis01.DGarciaProgramacionNCapasDiciembre24.ML;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class Alumno {
     
     private int IdAlumno;
+    @Pattern(regexp = "[a-zA-Z]+", message = "Solo letras")
     private String Nombre;
+    @NotEmpty(message = "NO puede estar vacio")
+    @Size(min=3, max = 15, message = "rango entre 3 y 15")
     private String ApellidoPaterno;
     private String ApellidoMaterno;
     public Semestre Semestre;

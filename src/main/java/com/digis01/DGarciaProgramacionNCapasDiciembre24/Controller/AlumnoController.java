@@ -12,6 +12,7 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.ResultExcel;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -90,11 +92,13 @@ public class AlumnoController {
             AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
             alumnoDireccion.Alumno = new Alumno();
             alumnoDireccion.Alumno.Semestre = new Semestre();
-//            alumnoDireccion.Direcciones = new Direccion();
+            alumnoDireccion.Direccion = new Direccion();
 //            alumnoDireccion.Direcciones.Colonia = new Colonia();
 
             model.addAttribute("alumnoDireccion", alumnoDireccion);
 
+            
+            
             return "AlumnoForm";
 
         } else { // lo edito
@@ -107,20 +111,24 @@ public class AlumnoController {
     }
 
     @PostMapping("/form")
-    public String Form(@ModelAttribute AlumnoDireccion alumnoDireccion, @RequestParam MultipartFile imagenFile) {
+    public String Form(@Valid @ModelAttribute AlumnoDireccion alumnoDireccion, BindingResult bindingResult, @RequestParam MultipartFile imagenFile, Model model) {
         //idAlumno == 0  && IdDireccion == 0
         
         try {
         /*validen que sea una imagen*/
         
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("alumnoDireccion", alumnoDireccion);
+                return "AlumnoForm";
+            }
+        
             if(!imagenFile.isEmpty()){
-                /*tomar el archivo y procesarlo a una base64*/
+                /*tomar el archivo y proce sarlo a una base64*/
                 byte[] bytes = imagenFile.getBytes();
                 String imagenBase64 = Base64.getEncoder().encodeToString(bytes);
                 alumnoDireccion.Alumno.setImagen(imagenBase64);
             }
         
-        alumnoDireccion.Alumno.setImagen("Aquí va la base64");
         alumnoDAOImplementation.Add(alumnoDireccion);
         
         } catch (Exception ex){
@@ -134,12 +142,23 @@ public class AlumnoController {
     public String Form(@RequestParam Integer IdAlumno, @RequestParam(required = false) Integer IdDireccion, Model model) {
 
         if (IdDireccion == null) {
-            System.out.println("Editar usuario");
+            AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
+            alumnoDireccion.Alumno = new Alumno();
+            alumnoDireccion.Alumno.setIdAlumno(1);
+            alumnoDireccion.Direccion = new Direccion();
+            alumnoDireccion.Direccion.setIdDireccion(-1);
+            model.addAttribute("alumnoDireccion", alumnoDireccion);
         } else if (IdDireccion == 0) {
-            System.out.println("Agregar direccion");
+            AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
+            alumnoDireccion.Alumno = new Alumno();
+            alumnoDireccion.Alumno.setIdAlumno(1);
+            alumnoDireccion.Direccion = new Direccion();
+            alumnoDireccion.Direccion.setIdDireccion(0);
+            model.addAttribute("alumnoDireccion", alumnoDireccion);
         } else {
             System.out.println("Editar direccion");
         }
+        
         return "AlumnoForm";
     }
 
