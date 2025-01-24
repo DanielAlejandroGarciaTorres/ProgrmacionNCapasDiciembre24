@@ -60,7 +60,7 @@ public class AlumnoController {
     public String Index(Model model) {
 
         Result result = alumnoDAOImplementation.GetAll();
-
+        Result resultJPA = alumnoDAOImplementation.GetAllJPA();
         Alumno alumnoBusqueda = new Alumno();
         alumnoBusqueda.Semestre = new Semestre();
         model.addAttribute("alumnoBusqueda", alumnoBusqueda);
@@ -156,7 +156,12 @@ public class AlumnoController {
             alumnoDireccion.Direccion.setIdDireccion(0);
             model.addAttribute("alumnoDireccion", alumnoDireccion);
         } else {
-            System.out.println("Editar direccion");
+            AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
+            alumnoDireccion.Alumno = new Alumno();
+            alumnoDireccion.Alumno.setIdAlumno(1);
+            alumnoDireccion.Direccion = new Direccion();
+            alumnoDireccion.Direccion.setIdDireccion(1);
+            model.addAttribute("alumnoDireccion", alumnoDireccion);
         }
         
         return "AlumnoForm";

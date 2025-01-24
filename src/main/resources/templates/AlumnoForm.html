@@ -10,159 +10,149 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
     <body layout:fragment="body">
 
-
-        <br>
-        <br>
-        <br>
-        <!--alumno-->
-        <div th:if="${alumnoDireccion.Alumno.IdAlumno == 0 && alumnoDireccion.Direccion.IdDireccion == 0}">Alumno se muestra</div>
-        <!--direccion-->
-        <div th:if="${alumnoDireccion.Alumno.IdAlumno != 0 && alumnoDireccion.Direccion.IdDireccion == 0}"><!--
--->            Direccion se muestra
-        </div>
-
-        <br>
-        <br>
-        <br>
-
-
         <div class="container">
             <form th:action="@{/Alumno/form}" method="post" th:object="${alumnoDireccion}" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{Alumno.IdAlumno}">
-                
-                <div class ="row mb-3 text-ceter">
-                    <div class="col-md-3 mx-auto">
-                        <div class="form-group">
-                            <label for="imagenFile">Imagen</label>}
-                            <input type="file" class="form-control" name="imagenFile" id="imagenFile">
-                            <!--<input type="hidden" th:field="*{alumnoDireccion.Alumno.Imagen}">-->
-                            <img src="data:image/jpeg;base64,${alumnoDireccion.Alumno.Imagen}">  
+
+
+                <div th:if="${(alumnoDireccion.Alumno.IdAlumno == 0 && alumnoDireccion.Direccion.IdDireccion == 0) 
+                     || (alumnoDireccion.Alumno.IdAlumno != 0 && alumnoDireccion.Direccion.IdDireccion == -1)}">
+                    <div class ="row mb-3 text-ceter">
+                        <div class="col-md-3 mx-auto">
+                            <div class="form-group">
+                                <label for="imagenFile">Imagen</label>}
+                                <input type="file" class="form-control" name="imagenFile" id="imagenFile">
+                                <!--<input type="hidden" th:field="*{alumnoDireccion.Alumno.Imagen}">-->
+                                <img src="data:image/jpeg;base64,${alumnoDireccion.Alumno.Imagen}">  
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="NombreAlumno" class="form-label">Nombre</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                            <input id="NombreAlumno" type="text" class="form-control" placeholder="Nombre" th:field="*{Alumno.Nombre}" onkeypress="return justLetters(event, this)">
-                        </div>  
-                        <span id="NombreAlumnoError" style="color: red"></span>
-                        <span class="text-danger" th:if="${#fields.hasErrors('Alumno.Nombre')}" th:errors='*{Alumno.Nombre}'></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="ApellidoPaternoAlumno" class="form-label">Apellido Paterno</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                            <input id="ApellidoPaternoAlumno" type="text" class="form-control" placeholder="Apellido Paterno" th:field="*{Alumno.ApellidoPaterno}" onkeypress="return justLettersAscii(event, this)">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="NombreAlumno" class="form-label">Nombre</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
+                                <input id="NombreAlumno" type="text" class="form-control" placeholder="Nombre" th:field="*{Alumno.Nombre}" onkeypress="return justLetters(event, this)">
+                            </div>  
+                            <span id="NombreAlumnoError" style="color: red"></span>
+                            <span class="text-danger" th:if="${#fields.hasErrors('Alumno.Nombre')}" th:errors='*{Alumno.Nombre}'></span>
                         </div>
-                        <span id="ApellidoPaternoAlumnoError" style="color: red"></span>
-                        <span class="text-danger" th:if="${#fields.hasErrors('Alumno.ApellidoPaterno')}" th:errors='*{Alumno.ApellidoPaterno}'></span>
+                        <div class="col-md-6">
+                            <label for="ApellidoPaternoAlumno" class="form-label">Apellido Paterno</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
+                                <input id="ApellidoPaternoAlumno" type="text" class="form-control" placeholder="Apellido Paterno" th:field="*{Alumno.ApellidoPaterno}" onkeypress="return justLettersAscii(event, this)">
+                            </div>
+                            <span id="ApellidoPaternoAlumnoError" style="color: red"></span>
+                            <span class="text-danger" th:if="${#fields.hasErrors('Alumno.ApellidoPaterno')}" th:errors='*{Alumno.ApellidoPaterno}'></span>
+                        </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="UserNameAlumno" class="form-label">Username</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input id="UserNameAlumno" type="text" class="form-control" placeholder="Username" >
+                            </div>     
+                        </div>
+                        <div class="col-md-4">
+                            <label for="FechaNacimientoAlumno" class="form-label">Fecha Nacimiento</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
+                                <input id="FechaNacimientoAlumno" type="date" class="form-control" >
+                            </div>     
+                        </div>
+                        <div class="col-md-4">
+                            <label for="SemestreAlumno" class="form-label">Semestre</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
+                                <select class="form-select"  th:field="*{Alumno.Semestre.IdSemestre}" aria-label="Default select example">
+                                    <option value=0 selected>Selecciona un semestre</option>
+                                    <option th:each="semestre : ${semestres}" th:value="${semestre.IdSemestre}" th:text="${semestre.Nombre}"></option>
+                                </select>
+                                <!--<input id="SemestreAlumno" type="text" class="form-control" placeholder="Semestre" th:field="*{Alumno.Semestre.IdSemestre}">-->
+                            </div>     
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label  class="form-label">Contraseña</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input type="text" class="form-control" placeholder="Contraseña" >
+                            </div>     
+                        </div>
+                        <div class="col-md-6">
+                            <label  class="form-label">FechaNacimiento</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input type="date" class="form-control" placeholder="Fecha" th:field="*{Alumno.FechaNacimiento}">
+                            </div>     
+                        </div>
+                    </div>
+                    <hr>
+
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="UserNameAlumno" class="form-label">Username</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input id="UserNameAlumno" type="text" class="form-control" placeholder="Username" >
-                        </div>     
+                <div th:if="${(alumnoDireccion.Alumno.IdAlumno != 0 && alumnoDireccion.Direccion.IdDireccion > 0) 
+                     || (alumnoDireccion.Alumno.IdAlumno != 0 && alumnoDireccion.Direccion.IdDireccion == 0)
+                     || (alumnoDireccion.Alumno.IdAlumno == 0 && alumnoDireccion.Direccion.IdDireccion == 0)}">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label  class="form-label">Calle</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input type="text" class="form-control" placeholder="Calle" th:field="*{Direccion.Calle}" >
+                            </div>     
+                        </div>
+                        <div class="col-md-2">
+                            <label  class="form-label"># Interior</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input type="text" class="form-control" placeholder="# int." >
+                            </div>     
+                        </div>
+                        <div class="col-md-2">
+                            <label  class="form-label"># Exterior</label>
+                            <div class="input-group ">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                                <input type="text" class="form-control" placeholder="# ext." >
+                            </div>     
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="FechaNacimientoAlumno" class="form-label">Fecha Nacimiento</label>
+                    <div class="col-md-3">
+                        <label for="ColoniaAlumno" class="form-label">Colonia</label>
                         <div class="input-group ">
                             <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                            <input id="FechaNacimientoAlumno" type="date" class="form-control" >
+                            <input id="ColoniaAlumno" type="text" class="form-control" placeholder="Colonia" >
                         </div>     
                     </div>
+
                     <div class="col-md-4">
-                        <label for="SemestreAlumno" class="form-label">Semestre</label>
+                        <label for="EstadoDireccion" class="form-label">Estado</label>
                         <div class="input-group ">
                             <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                            <select class="form-select"  th:field="*{Alumno.Semestre.IdSemestre}" aria-label="Default select example">
-                                <option value=0 selected>Selecciona un semestre</option>
-                                <option th:each="semestre : ${semestres}" th:value="${semestre.IdSemestre}" th:text="${semestre.Nombre}"></option>
+                            <select id="ddlEstado" class="form-select" aria-label="Default select example">
+                                <option value=0 selected>Selecciona un Estado</option>
+                                <option th:each="estado : ${estados}" th:value="${estado.IdEstado}" th:text="${estado.Nombre}"></option>
+                            </select>
+                            <!--<input id="SemestreAlumno" type="text" class="form-control" placeholder="Semestre" th:field="*{Alumno.Semestre.IdSemestre}">-->
+                        </div>     
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="Municipio" class="form-label">Municipio</label>
+                        <div class="input-group ">
+                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
+                            <select id="ddlMunicipio" class="form-select" aria-label="Default select example">
+                                <option value=0 selected>Selecciona un Municipio</option>
+
                             </select>
                             <!--<input id="SemestreAlumno" type="text" class="form-control" placeholder="Semestre" th:field="*{Alumno.Semestre.IdSemestre}">-->
                         </div>     
                     </div>
                 </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label  class="form-label">Contraseña</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input type="text" class="form-control" placeholder="Contraseña" >
-                        </div>     
-                    </div>
-                    <div class="col-md-6">
-                        <label  class="form-label">FechaNacimiento</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input type="date" class="form-control" placeholder="Fecha" th:field="*{Alumno.FechaNacimiento}">
-                        </div>     
-                    </div>
-                </div>
-                <hr>
-
-
-                <div class="row mb-3">
-                    <div class="col-md-8">
-                        <label  class="form-label">Calle</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input type="text" class="form-control" placeholder="Calle" th:field="*{Direccion.Calle}" >
-                        </div>     
-                    </div>
-                    <div class="col-md-2">
-                        <label  class="form-label"># Interior</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input type="text" class="form-control" placeholder="# int." >
-                        </div>     
-                    </div>
-                    <div class="col-md-2">
-                        <label  class="form-label"># Exterior</label>
-                        <div class="input-group ">
-                            <span class="input-group-text" id="basic-addon1">@</span>
-                            <input type="text" class="form-control" placeholder="# ext." >
-                        </div>     
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label for="ColoniaAlumno" class="form-label">Colonia</label>
-                    <div class="input-group ">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                        <input id="ColoniaAlumno" type="text" class="form-control" placeholder="Colonia" >
-                    </div>     
-                </div>
-
-                <div class="col-md-4">
-                    <label for="EstadoDireccion" class="form-label">Estado</label>
-                    <div class="input-group ">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                        <select id="ddlEstado" class="form-select" aria-label="Default select example">
-                            <option value=0 selected>Selecciona un Estado</option>
-                            <option th:each="estado : ${estados}" th:value="${estado.IdEstado}" th:text="${estado.Nombre}"></option>
-                        </select>
-                        <!--<input id="SemestreAlumno" type="text" class="form-control" placeholder="Semestre" th:field="*{Alumno.Semestre.IdSemestre}">-->
-                    </div>     
-                </div>
-
-                <div class="col-md-4">
-                    <label for="Municipio" class="form-label">Municipio</label>
-                    <div class="input-group ">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-fill"></i></span>
-                        <select id="ddlMunicipio" class="form-select" aria-label="Default select example">
-                            <option value=0 selected>Selecciona un Municipio</option>
-
-                        </select>
-                        <!--<input id="SemestreAlumno" type="text" class="form-control" placeholder="Semestre" th:field="*{Alumno.Semestre.IdSemestre}">-->
-                    </div>     
-                </div>
-
 
                 <button type="submit" class="btn btn-success">Agregar</button>
 

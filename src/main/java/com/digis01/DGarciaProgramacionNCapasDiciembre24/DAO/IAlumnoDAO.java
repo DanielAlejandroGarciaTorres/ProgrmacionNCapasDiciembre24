@@ -12,4 +12,11 @@ public interface IAlumnoDAO {
     Result Add(AlumnoDireccion alumnoDirecccion);
     
     Result DireccionesByIdAlumno( int idAlumno );
+    
+    Result AlumnoById(int idAlumno);
+    
+    Result DireccionAlumnoByIdDireccion(int idDireccion);
+    
+    
+    Result GetAllJPA();
 }
