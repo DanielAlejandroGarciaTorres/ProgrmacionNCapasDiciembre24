@@ -9,6 +9,7 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
@@ -234,24 +235,44 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
         Result result = new Result();
         try {
             // JPQL
+            
+            result.objects = new ArrayList<>();
+            
             TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno> queryAlumno = entityManager.createQuery("FROM Alumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno.class);
             List<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno> alumnosJPA = queryAlumno.getResultList();
             
-            /*
-            recorrer a todos los alumnos foreach
+            for (com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno alumno : alumnosJPA) {
                 AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
-                ad.alumo = new ALumno
-                ad.alumno.setId
-                alumnoDIreccion.Alumno = alumno
-                // try catch finallly
-                TypedQuery de Direccion para buscar direcciones del alumno que estoy iterando 
+                alumnoDireccion.Alumno = new Alumno();
+                alumnoDireccion.Alumno.setIdAlumno(alumno.getIdAlumno());
+                alumnoDireccion.Alumno.setNombre(alumno.getNombre());
+                alumnoDireccion.Alumno.setApellidoPaterno(alumno.getApellidoPaterno());
+                alumnoDireccion.Alumno.Semestre = new Semestre();
+                alumnoDireccion.Alumno.Semestre.setIdSemestre(alumno.Semestre.getIdSemestre());
+                alumnoDireccion.Alumno.Semestre.setNombre(alumno.Semestre.getNombre());
+                
+//                En caso de solo querer recuperar uno - singleResult
+//                TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> queryDireccionErroneo = entityManager.createQuery("FROM Direccion WHERE Alumno.IdAlumno = :pIdAlumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion.class);
+//                queryDireccionErroneo.setParameter("pIdAlumno", alumno.getIdAlumno());
+//                queryDireccionErroneo.getSingleResult();
+                
+                TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> queryDireccion = entityManager.createQuery("FROM Direccion WHERE Alumno.IdAlumno = :pIdAlumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion.class);
+                queryDireccion.setParameter("pIdAlumno", alumno.getIdAlumno());
+                List<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> direcciones = queryDireccion.getResultList();
+                
+                alumnoDireccion.Direcciones = new ArrayList<>();
+                for (com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion direccione : direcciones) {
+                    Direccion direccion = new Direccion();
+                    direccion.setCalle(direccione.getCalle());
                     
-            
-                    
-            
+                    alumnoDireccion.Direcciones.add(direccion);
+                }
+                
                 result.objects.add(alumnoDireccion);
-            */
+                
+            }
             
+            result.correct = true;
             
         }catch(Exception ex) {
             result.correct = false;
@@ -261,6 +282,26 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
         }
         
         return result;
+    }
+    
+    @Transactional // DML
+    @Override
+    public Result AddJPA(AlumnoDireccion alumnoDireccion) {
+        
+        com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno alumnoJPA = new com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno();
+        alumnoJPA.setNombre("Sergio");
+        alumnoJPA.setApellidoPaterno("Perez");
+        alumnoJPA.setApellidoMaterno("Perez");
+        alumnoJPA.setUserName("checogod");
+        alumnoJPA.setPassword("checo123");
+        alumnoJPA.setTelefono("1234560789");
+        alumnoJPA.Semestre = new com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Semestre();
+        alumnoJPA.Semestre.setIdSemestre(1);
+        
+        
+        entityManager.persist(alumnoJPA);
+        
+        return new Result();
     }
 
 }

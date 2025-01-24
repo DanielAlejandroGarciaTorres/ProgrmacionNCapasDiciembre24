@@ -59,14 +59,14 @@ public class AlumnoController {
     @GetMapping
     public String Index(Model model) {
 
-        Result result = alumnoDAOImplementation.GetAll();
+//        Result result = alumnoDAOImplementation.GetAll();
         Result resultJPA = alumnoDAOImplementation.GetAllJPA();
         Alumno alumnoBusqueda = new Alumno();
         alumnoBusqueda.Semestre = new Semestre();
         model.addAttribute("alumnoBusqueda", alumnoBusqueda);
 
-        if (result.correct) {
-            model.addAttribute("listaAlumno", result.objects);
+        if (resultJPA.correct) {
+            model.addAttribute("listaAlumno", resultJPA.objects);
         } else {
             model.addAttribute("listaAlumno", null);
         }
@@ -129,7 +129,8 @@ public class AlumnoController {
                 alumnoDireccion.Alumno.setImagen(imagenBase64);
             }
         
-        alumnoDAOImplementation.Add(alumnoDireccion);
+//        alumnoDAOImplementation.Add(alumnoDireccion);
+            alumnoDAOImplementation.AddJPA(alumnoDireccion);
         
         } catch (Exception ex){
             return"Error";
