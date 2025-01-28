@@ -17,6 +17,8 @@ public interface IAlumnoDAO {
     
     Result DireccionAlumnoByIdDireccion(int idDireccion);
     
+    Result BajaLogicaJPA(int IdAlumno);
+    
     
     Result GetAllJPA();
     

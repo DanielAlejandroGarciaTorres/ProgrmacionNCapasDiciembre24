@@ -25,7 +25,7 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
 
     @Autowired //Inyección dependencias (field, contructor, setter)
     private JdbcTemplate jdbcTemplate; // conexión directa 
-    
+
     @Autowired
     private EntityManager entityManager; // conexión jpa
 
@@ -190,31 +190,31 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
         Result result = new Result();
         try {
             jdbcTemplate.execute("{CALL AlumnoGetById(?,?)}",
-                (CallableStatementCallback<Void>) callableStatement -> {
-                    callableStatement.setInt(1, idAlumno);
-                    callableStatement.registerOutParameter(1, Types.REF_CURSOR);
-                    callableStatement.execute();
-                    ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
+                    (CallableStatementCallback<Void>) callableStatement -> {
+                        callableStatement.setInt(1, idAlumno);
+                        callableStatement.registerOutParameter(1, Types.REF_CURSOR);
+                        callableStatement.execute();
+                        ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
 
-                    if (resultSet.next()) {
+                        if (resultSet.next()) {
 
-                        Alumno alumno = new Alumno();
-                        alumno.setIdAlumno(idAlumno);
-                        alumno.setNombre(resultSet.getString("NombreAlumno"));
-                        alumno.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
-                        alumno.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
-                        alumno.Semestre = new Semestre();
-                        alumno.Semestre.setIdSemestre(resultSet.getInt("IdSemestre"));
-                        alumno.Semestre.setNombre(resultSet.getString("NombreSemestre"));
-                        alumno.setTelefono(resultSet.getString("Telefono"));
-                        alumno.setUserName(resultSet.getString("UserName"));
-                        alumno.setPassword(resultSet.getString("Password"));
+                            Alumno alumno = new Alumno();
+                            alumno.setIdAlumno(idAlumno);
+                            alumno.setNombre(resultSet.getString("NombreAlumno"));
+                            alumno.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
+                            alumno.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
+                            alumno.Semestre = new Semestre();
+                            alumno.Semestre.setIdSemestre(resultSet.getInt("IdSemestre"));
+                            alumno.Semestre.setNombre(resultSet.getString("NombreSemestre"));
+                            alumno.setTelefono(resultSet.getString("Telefono"));
+                            alumno.setUserName(resultSet.getString("UserName"));
+                            alumno.setPassword(resultSet.getString("Password"));
 
-                        result.object = alumno;
-                        result.correct = true;
-                    }
-                return null;
-                });
+                            result.object = alumno;
+                            result.correct = true;
+                        }
+                        return null;
+                    });
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
@@ -235,12 +235,12 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
         Result result = new Result();
         try {
             // JPQL
-            
+
             result.objects = new ArrayList<>();
-            
+
             TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno> queryAlumno = entityManager.createQuery("FROM Alumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno.class);
             List<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno> alumnosJPA = queryAlumno.getResultList();
-            
+
             for (com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno alumno : alumnosJPA) {
                 AlumnoDireccion alumnoDireccion = new AlumnoDireccion();
                 alumnoDireccion.Alumno = new Alumno();
@@ -250,58 +250,76 @@ public class AlumnoDAOImplementation implements IAlumnoDAO {
                 alumnoDireccion.Alumno.Semestre = new Semestre();
                 alumnoDireccion.Alumno.Semestre.setIdSemestre(alumno.Semestre.getIdSemestre());
                 alumnoDireccion.Alumno.Semestre.setNombre(alumno.Semestre.getNombre());
-                
+
+                alumnoDireccion.Alumno.setStatus(alumno.getStatus());
+
 //                En caso de solo querer recuperar uno - singleResult
 //                TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> queryDireccionErroneo = entityManager.createQuery("FROM Direccion WHERE Alumno.IdAlumno = :pIdAlumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion.class);
 //                queryDireccionErroneo.setParameter("pIdAlumno", alumno.getIdAlumno());
 //                queryDireccionErroneo.getSingleResult();
-                
                 TypedQuery<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> queryDireccion = entityManager.createQuery("FROM Direccion WHERE Alumno.IdAlumno = :pIdAlumno", com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion.class);
                 queryDireccion.setParameter("pIdAlumno", alumno.getIdAlumno());
                 List<com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion> direcciones = queryDireccion.getResultList();
-                
+
                 alumnoDireccion.Direcciones = new ArrayList<>();
                 for (com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Direccion direccione : direcciones) {
                     Direccion direccion = new Direccion();
                     direccion.setCalle(direccione.getCalle());
-                    
+
                     alumnoDireccion.Direcciones.add(direccion);
                 }
-                
+
                 result.objects.add(alumnoDireccion);
-                
+
             }
-            
+
             result.correct = true;
-            
-        }catch(Exception ex) {
+
+        } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
             result.ex = ex;
             result.objects = null;
         }
-        
+
         return result;
     }
-    
-    @Transactional // DML
+
+    @Transactional // DML Insert/update/delete
     @Override
     public Result AddJPA(AlumnoDireccion alumnoDireccion) {
-        
+
         com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno alumnoJPA = new com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno();
-        alumnoJPA.setNombre("Sergio");
-        alumnoJPA.setApellidoPaterno("Perez");
-        alumnoJPA.setApellidoMaterno("Perez");
-        alumnoJPA.setUserName("checogod");
-        alumnoJPA.setPassword("checo123");
-        alumnoJPA.setTelefono("1234560789");
+        alumnoJPA.setNombre("Ramón");
+        alumnoJPA.setApellidoPaterno("Valdez");
+        alumnoJPA.setApellidoMaterno("Valdez");
+        alumnoJPA.setUserName("Rorro");
+        alumnoJPA.setPassword("rorro123");
+        alumnoJPA.setTelefono("1234560089");
         alumnoJPA.Semestre = new com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Semestre();
         alumnoJPA.Semestre.setIdSemestre(1);
-        
-        
+
         entityManager.persist(alumnoJPA);
-        
+
         return new Result();
+    }
+
+    @Override
+    @Transactional
+    public Result BajaLogicaJPA(int IdAlumno) {
+        Result result = new Result();
+        try {
+            com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno alumnoJPA = entityManager.find(com.digis01.DGarciaProgramacionNCapasDiciembre24.JPA.Alumno.class, IdAlumno);
+
+            alumnoJPA.setStatus(alumnoJPA.getStatus().equals("Activo") ? "Inactivo" : "Activo");
+            entityManager.merge(alumnoJPA);
+            result.correct = true;
+        } catch(Exception ex){
+            
+        }
+
+        return result;
+
     }
 
 }

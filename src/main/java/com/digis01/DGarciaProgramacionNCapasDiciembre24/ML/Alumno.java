@@ -22,6 +22,7 @@ public class Alumno {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date FechaNacimiento;
     private String Imagen;
+    private String Status;
     
     public Alumno(){
         
@@ -112,6 +113,15 @@ public class Alumno {
     public void setImagen(String Imagen) {
         this.Imagen = Imagen;
     }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String Status) {
+        this.Status = Status;
+    }
+    
     
     
     

@@ -313,4 +313,10 @@ public class AlumnoController {
         return listaErrores;
     }
 
+    @GetMapping("/BajaLogica/{IdAlumno}")
+    @ResponseBody
+    public Result BajaLogica(@PathVariable int IdAlumno){
+        Result result = alumnoDAOImplementation.BajaLogicaJPA(IdAlumno);
+        return result;
+    }
 }

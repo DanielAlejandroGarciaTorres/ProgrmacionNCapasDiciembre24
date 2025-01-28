@@ -35,6 +35,8 @@ public class Alumno {
     private String Password;
     @Column(name = "curp")
     private String Curp;
+    @Column(name = "status")
+    private String Status;
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
 //    private Date FechaNacimiento;
 //    private String Imagen;
@@ -119,6 +121,14 @@ public class Alumno {
 
     public void setCurp(String Curp) {
         this.Curp = Curp;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String Status) {
+        this.Status = Status;
     }
 
     
