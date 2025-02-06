@@ -1,10 +1,13 @@
 package com.digis01.DGarciaProgramacionNCapasDiciembre24.RestController;
 
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,7 +68,24 @@ public class DemoRestController {
             return ResponseEntity.badRequest().body(result);
         }
     }
+    @GetMapping("/suma/{numeroUno}/{numeroDos}")
+    public int Suma1(@PathVariable int numeroUno, @PathVariable int numeroDos){
+        return numeroUno + numeroDos;
+    }
     
+    @GetMapping("/suma")
+    public int Suma2(@RequestParam int numeroUno, @RequestParam int numeroDos){
+        return numeroUno + numeroDos;
+    }
     
+    @PostMapping("/suma")
+    public int Suma3(@RequestBody List<Integer> numeros){
+        int suma = 0;
+        for (Integer numero : numeros) {
+            suma += numero;
+        }
+        
+        return suma;
+    }
     
 }

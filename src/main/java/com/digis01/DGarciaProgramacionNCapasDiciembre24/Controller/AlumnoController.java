@@ -11,6 +11,7 @@ import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Direccion;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Result;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.ResultExcel;
 import com.digis01.DGarciaProgramacionNCapasDiciembre24.ML.Semestre;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -22,8 +23,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -56,17 +59,36 @@ public class AlumnoController {
     @Autowired
     private MunicipioDAOImplementation municipioDAOImplementation;
 
+    private List<AlumnoDireccion> listaOriginal;
+    private List<AlumnoDireccion> listaFiltradaOrdenada;
+    
+    @PostConstruct
+    public void init(){
+        listaOriginal = alumnoDAOImplementation.GetAllJPA().objects
+                .stream().map(ad -> (AlumnoDireccion) ad)
+                .collect(Collectors.toList());
+        listaFiltradaOrdenada = new ArrayList<>(listaOriginal);
+    }
+    
     @GetMapping
     public String Index(Model model) {
 
 //        Result result = alumnoDAOImplementation.GetAll();
-        Result resultJPA = alumnoDAOImplementation.GetAllJPA();
+        //Result resultJPA = alumnoDAOImplementation.GetAllJPA();
+
+        /*
+        STREAMS - 
+        procesa colleciones de datos de manera declarativa
+        nos permite realizar operaciones como filtrado, ordenamiento, etc...
+        */
+               
         Alumno alumnoBusqueda = new Alumno();
         alumnoBusqueda.Semestre = new Semestre();
         model.addAttribute("alumnoBusqueda", alumnoBusqueda);
 
-        if (resultJPA.correct) {
-            model.addAttribute("listaAlumno", resultJPA.objects);
+        if (!listaOriginal.isEmpty()) {
+            listaFiltradaOrdenada = new ArrayList<>(listaOriginal);
+            model.addAttribute("listaAlumno", listaOriginal);
         } else {
             model.addAttribute("listaAlumno", null);
         }
@@ -76,9 +98,20 @@ public class AlumnoController {
     @PostMapping
     public String Index(@ModelAttribute Alumno alumnoBusqueda, Model model) {
         model.addAttribute("alumnoBusqueda", alumnoBusqueda);
-        //alumnoDAOImplementation.GetAllDinamico(alumnoBusqueda);
+        listaFiltradaOrdenada =listaOriginal.stream()
+                .filter(ad -> ad.Alumno.getNombre().toLowerCase().contains(alumnoBusqueda.getNombre().toLowerCase()))
+                .filter(ad -> ad.Alumno.getApellidoPaterno().toLowerCase().contains(alumnoBusqueda.getApellidoPaterno().toLowerCase()))
+                .collect(Collectors.toList());
+        
+        model.addAttribute("listaAlumno",listaFiltradaOrdenada);
         return "AlumnoIndex";
     }
+    
+//    @PostMapping
+//    public String Ordenamiento(/*recibir los datos de ordenamiento*/) {
+////        listaFiltradaOrdenada = listaFiltradaOrdenada.stream().sorted()
+//        return "AlumnoIndex";
+//    }
 
     @GetMapping("/form/{idAlumno}")
     public String Form(@PathVariable int idAlumno, Model model) {
